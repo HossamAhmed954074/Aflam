@@ -91,7 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                            child: NewestMovies(movieModel: searchResults!),
+                            child: NewestMovies(
+                              movieModel: searchResults!,
+                              heroTagPrefix:
+                                  'search', // Unique prefix for search results
+                            ),
                           ),
                         ],
                       ),
@@ -116,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverToBoxAdapter(
                     child: NewestMovies(
                       movieModel: topRatedMovies ?? MovieModel(),
+                      heroTagPrefix:
+                          'newest', // Unique prefix for newest movies
                     ),
                   ),
                   // All Movies Section Title
@@ -164,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         return MovieItem(
                           result: allMovies!.results![index],
-                         
+                          heroTagPrefix: 'grid', // Unique prefix for grid items
                         );
                       }, childCount: allMovies?.results?.length ?? 0),
                     ),
@@ -243,8 +249,13 @@ class MoviesPagesFooter extends StatelessWidget {
 }
 
 class NewestMovies extends StatelessWidget {
-  const NewestMovies({super.key, required this.movieModel});
+  const NewestMovies({
+    super.key,
+    required this.movieModel,
+    this.heroTagPrefix = 'newest', // Default prefix
+  });
   final MovieModel movieModel;
+  final String heroTagPrefix;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -272,7 +283,7 @@ class NewestMovies extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: MovieItem(
                     result: movieModel.results![index],
-                   
+                    heroTagPrefix: heroTagPrefix, // Pass the prefix through
                   ),
                 );
               },
@@ -282,9 +293,14 @@ class NewestMovies extends StatelessWidget {
 }
 
 class MovieItem extends StatelessWidget {
-  const MovieItem({super.key, required this.result});
-  
+  const MovieItem({
+    super.key,
+    required this.result,
+    this.heroTagPrefix = 'movie', // Add prefix to make hero tags unique
+  });
+
   final Results result;
+  final String heroTagPrefix;
 
   String get imageUrl {
     try {
@@ -299,12 +315,17 @@ class MovieItem extends StatelessWidget {
     return "";
   }
 
+  String get heroTag {
+    // Create unique hero tag using prefix, movie ID, and imageUrl
+    return '${heroTagPrefix}_${result.id}_${imageUrl.hashCode}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
-        context.push(AppRouter.details,extra: result);
+        context.push(AppRouter.details, extra: result);
       },
       child: SizedBox(
         width: 140,
@@ -315,42 +336,45 @@ class MovieItem extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: imageUrl.isNotEmpty
-                    ? CachedNetworkImage(
-                        key: ValueKey(
-                          imageUrl,
-                        ), // Add key to prevent widget conflicts
-                        imageUrl: imageUrl,
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        // Reduced memory cache to prevent crashes
-                        memCacheWidth: 300,
-                        memCacheHeight: 450,
-                        // Add timeout to prevent hanging
-                        httpHeaders: const {'Connection': 'keep-alive'},
-                        placeholder: (context, url) => Container(
+                    ? Hero(
+                        tag: heroTag, // Use unique hero tag
+                        child: CachedNetworkImage(
+                          key: ValueKey(
+                            heroTag, // Use hero tag as key for uniqueness
+                          ), // Add key to prevent widget conflicts
+                          imageUrl: imageUrl,
                           width: double.infinity,
                           height: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.grey,
+                          fit: BoxFit.cover,
+                          // Reduced memory cache to prevent crashes
+                          memCacheWidth: 300,
+                          memCacheHeight: 450,
+                          // Add timeout to prevent hanging
+                          httpHeaders: const {'Connection': 'keep-alive'},
+                          placeholder: (context, url) => Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.grey,
+                                ),
                               ),
                             ),
                           ),
+                          errorWidget: (context, url, error) {
+                            // Log error for debugging
+                            debugPrint(
+                              'Image loading error: $error for URL: $url',
+                            );
+                            return _buildErrorWidget();
+                          },
                         ),
-                        errorWidget: (context, url, error) {
-                          // Log error for debugging
-                          debugPrint(
-                            'Image loading error: $error for URL: $url',
-                          );
-                          return _buildErrorWidget();
-                        },
                       )
                     : _buildErrorWidget(),
               ),

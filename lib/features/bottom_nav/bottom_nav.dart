@@ -12,11 +12,12 @@ class BottomNavegationBarCustom extends StatelessWidget {
   List<Widget> _buildScreens() {
     return [
       BlocProvider(
-        create: (context) => HomeCubit()..fetchTopRatedMovies()..fetchAllMovies(),
+        create: (context) => HomeCubit()
+          ..fetchTopRatedMovies()
+          ..fetchAllMovies(),
         child: HomeScreen(),
       ),
       MarkedFaveroitsMoviesScreen(),
-      HomeScreen(),
     ];
   }
 
@@ -64,12 +65,6 @@ class BottomNavegationBarCustom extends StatelessWidget {
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.star),
         title: "Favorites",
-        activeColorPrimary: Colors.white,
-        inactiveColorPrimary: Colors.grey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(CupertinoIcons.person),
-        title: "Profile",
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
       ),

@@ -1,8 +1,20 @@
+import 'package:aflam/core/models/movie_model.dart';
 import 'package:aflam/core/router/app_router.dart';
 import 'package:aflam/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // initialize Hive
+  await Hive.initFlutter();
+
+  // Register Hive adapters
+  Hive.registerAdapter(MovieModelAdapter());
+  Hive.registerAdapter(ResultsAdapter());
+
+  await Hive.openBox('favorites');
+
   runApp(const MyApp());
 }
 
@@ -20,5 +32,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

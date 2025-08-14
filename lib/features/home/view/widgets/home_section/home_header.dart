@@ -2,7 +2,8 @@ import 'package:aflam/features/home/view/widgets/home_section/custom_text_field.
 import 'package:flutter/cupertino.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  const HomeHeader({super.key, required this.onClear});
+  final Function() onClear;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -18,7 +19,7 @@ class HomeHeader extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16),
-         CustomSearchTextField(),
+          CustomSearchTextField(onClear: onClear),
         ],
       ),
     );

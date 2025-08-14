@@ -252,7 +252,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Hossam Ahmed**
 - GitHub: [@HossamAhmed954074](https://github.com/HossamAhmed954074)
-- Email: [your-email@example.com](mailto:your-email@example.com)
+- Email: [your-email@example.com](mailto:eltohamehossam@gmail.com)
 
 ## 🙏 Acknowledgments
 
